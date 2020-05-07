@@ -19,7 +19,7 @@ import { dateTime, AbsoluteTimeRange, LanguageProvider, HistoryItem } from '@gra
 
 import { CloudWatchDatasource } from './datasource';
 import { CompletionItem, TypeaheadInput, TypeaheadOutput, Token } from '@grafana/ui';
-import { Grammar } from 'prismjs';
+import Prism, { Grammar } from 'prismjs';
 
 const HISTORY_ITEM_COUNT = 10;
 const HISTORY_COUNT_CUTOFF = 1000 * 60 * 60 * 24; // 24h
@@ -102,6 +102,18 @@ export class CloudWatchLanguageProvider extends LanguageProvider {
       ).values(),
     ];
   }, 30 * 1000);
+
+  isStatsQuery(query: string): boolean {
+    const grammar = Prism.languages['cloudwatch'];
+    const tokens = Prism.tokenize(query, grammar) ?? [];
+
+    return !!tokens.find(
+      token =>
+        typeof token !== 'string' &&
+        token.content.toString().toLowerCase() === 'stats' &&
+        token.type === 'query-command'
+    );
+  }
 
   /**
    * Return suggestions based on input that can be then plugged into a typeahead dropdown.
