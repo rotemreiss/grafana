@@ -104,7 +104,7 @@ export class CloudWatchLanguageProvider extends LanguageProvider {
   }, 30 * 1000);
 
   isStatsQuery(query: string): boolean {
-    const grammar = Prism.languages['cloudwatch'];
+    const grammar = this.getSyntax();
     const tokens = Prism.tokenize(query, grammar) ?? [];
 
     return !!tokens.find(
